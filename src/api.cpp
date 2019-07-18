@@ -207,3 +207,8 @@ void sentry_set_level(sentry_level_t level) {
     g_scope.level = level;
     flush_event();
 }
+
+void sentry_set_reporting_enabled(bool enabled) {
+    WITH_LOCKED_SCOPE;
+    sentry::enable_backend(enabled);
+}

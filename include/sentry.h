@@ -175,6 +175,14 @@ typedef struct sentry_user_s {
 SENTRY_API int sentry_init(sentry_options_t *options);
 
 /*
+ * Enables/disables the Sentry SDK from sending reports
+ *
+ * Setting this false will allow the Sentry SDK to generate crash reports 
+ * on the client, but will not send them to the DSN endpoint.
+ */
+SENTRY_API void sentry_set_reporting_enabled(bool enabled);
+
+/*
  * Returns the bound options.
  */
 SENTRY_API const sentry_options_t *sentry_get_options(void);

@@ -5,6 +5,7 @@
 
 namespace sentry {
 void init_backend();
+void enable_backend(bool);
 }
 
 #endif

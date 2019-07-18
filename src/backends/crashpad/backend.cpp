@@ -18,6 +18,7 @@
 using namespace crashpad;
 
 static SimpleStringDictionary simple_annotations;
+static std::unique_ptr<CrashReportDatabase> db;
 
 namespace sentry {
 
@@ -57,8 +58,7 @@ void init_backend() {
         return;
     }
 
-    std::unique_ptr<CrashReportDatabase> db =
-        CrashReportDatabase::Initialize(database);
+    db = CrashReportDatabase::Initialize(database);
 
     if (db != nullptr && db->GetSettings() != nullptr) {
         db->GetSettings()->SetUploadsEnabled(true);
@@ -66,6 +66,12 @@ void init_backend() {
 
     CrashpadInfo *crashpad_info = CrashpadInfo::GetCrashpadInfo();
     crashpad_info->set_simple_annotations(&simple_annotations);
+}
+
+void enable_backend(bool enabled){
+    if (db) {
+        db->GetSettings()->SetUploadsEnabled(enabled);
+    }
 }
 
 }  // namespace sentry
