@@ -70,6 +70,18 @@ int sentry_init(sentry_options_t *options) {
     }
     sentry::cleanup_old_runs();
 
+    FILE *file = current_run_folder.join(SENTRY_BREADCRUMB1_FILE).open("w");
+    if (file != NULL) {
+        fclose(file);
+    }
+
+    file = current_run_folder.join(SENTRY_BREADCRUMB2_FILE).open("w");
+    if (file != NULL) {
+        fclose(file);
+    }
+
+    flush_event();
+
     return 0;
 }
 
