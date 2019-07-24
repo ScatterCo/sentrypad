@@ -18,14 +18,14 @@
 using namespace crashpad;
 
 static SimpleStringDictionary simple_annotations;
-static std::unique_ptr<CrashReportDatabase> db;
+static base::FilePath s_database;
 
 namespace sentry {
 
 void init_backend() {
     const sentry_options_t *options = sentry_get_options();
 
-    base::FilePath database(options->database_path.as_osstr());
+    s_database = base::FilePath(options->database_path.as_osstr());
     base::FilePath handler(options->handler_path.as_osstr());
     std::map<std::string, std::string> annotations;
     std::map<std::string, base::FilePath> file_attachments;
@@ -46,7 +46,7 @@ void init_backend() {
     CrashpadClient client;
     std::string url = options->dsn.get_minidump_url();
     bool success = client.StartHandlerWithAttachments(
-        handler, database, database, url, annotations, file_attachments,
+        handler, s_database, s_database, url, annotations, file_attachments,
         arguments,
         /* restartable */ true,
         /* asynchronous_start */ false);
@@ -58,7 +58,7 @@ void init_backend() {
         return;
     }
 
-    db = CrashReportDatabase::Initialize(database);
+    std::unique_ptr<CrashReportDatabase> db = CrashReportDatabase::Initialize(s_database);
 
     if (db != nullptr && db->GetSettings() != nullptr) {
         db->GetSettings()->SetUploadsEnabled(true);
@@ -69,9 +69,20 @@ void init_backend() {
 }
 
 void enable_backend(bool enabled){
-    if (db) {
+    std::unique_ptr<CrashReportDatabase> db = CrashReportDatabase::InitializeWithoutCreating(s_database);
+    if (db != nullptr && db->GetSettings() != nullptr) {
         db->GetSettings()->SetUploadsEnabled(enabled);
     }
+}
+
+void dump_without_crash() {
+    CONTEXT ctx;
+    CaptureContext(&ctx);
+    CrashpadClient::DumpWithoutCrash(ctx);
+}
+
+void dump_and_crash(void* ctx) {
+    CrashpadClient::DumpAndCrash(reinterpret_cast<EXCEPTION_POINTERS*>(ctx));
 }
 
 }  // namespace sentry

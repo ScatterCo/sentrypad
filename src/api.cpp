@@ -85,6 +85,16 @@ int sentry_init(sentry_options_t *options) {
     return 0;
 }
 
+void sentry_capture_event()
+{
+    sentry::dump_without_crash();
+}
+
+void sentry_capture_event_and_crash(void* ctx)
+{
+    sentry::dump_and_crash(ctx);
+}
+
 const sentry_options_t *sentry_get_options(void) {
     return g_options;
 }
@@ -220,7 +230,7 @@ void sentry_set_level(sentry_level_t level) {
     flush_event();
 }
 
-void sentry_set_reporting_enabled(bool enabled) {
+void sentry_set_reporting_enabled(int enabled) {
     WITH_LOCKED_SCOPE;
-    sentry::enable_backend(enabled);
+    sentry::enable_backend(!!enabled);
 }
