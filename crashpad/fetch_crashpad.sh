@@ -16,6 +16,10 @@ else
   git clone https://chromium.googlesource.com/chromium/tools/depot_tools.git
 fi
 
+pushd depot_tools
+./update_depot_tools
+popd
+
 . $SCRIPT_DIR/vars.sh
 
 if [[ "${TF_BUILD:-}" == "True" ]]; then
