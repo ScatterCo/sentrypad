@@ -20,7 +20,7 @@ pushd depot_tools
 ./update_depot_tools
 popd
 
-. $SCRIPT_DIR/vars.sh
+. "$SCRIPT_DIR/vars.sh"
 
 if [[ "${TF_BUILD:-}" == "True" ]]; then
   # Set git data to avoid errors
